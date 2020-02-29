@@ -1,0 +1,494 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package aiproject1;
+
+import static java.lang.System.arraycopy;
+import java.util.Arrays;
+import java.util.LinkedList;
+/**
+ *
+ * @author Admin
+ */
+class Tree{
+    
+    public static LinkedList<Node> frontier = new LinkedList<Node>();
+    public static LinkedList<Node> explored = new LinkedList<Node>();
+    public static LinkedList<FinalPath> path = new LinkedList<FinalPath>();
+    Node root;
+    
+    
+    Tree(int[] puzzle){
+        root = new Node(puzzle);
+        BFS(root);
+    }
+      
+    public void BFS(Node n){
+        System.out.println("Processing path... please be patient :)");
+        if(goalTest(n)){
+            System.out.println("GOAL FOUND. INITIAL STATE IS ALREADY THE GOAL STATE!");
+            getResults();
+            return; // GOAL FOUND
+        }
+        frontier.push(root);
+        while(frontier.peekFirst() != null){
+            Node tempNode = frontier.pollLast();
+            explored.add(tempNode);
+            addToFrontier(tempNode);
+        }
+        System.out.println("GOAL NOT FOUND");
+    }
+    
+    public void addToFrontier(Node n){
+
+        
+        
+        int[] temp = new int[9];
+        arraycopy(n.puzzle,0,temp,0,9);
+        int pos = findPosition(temp);
+        switch(pos){
+            case 0:{
+                int[] puzzleDown = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleDown,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleRight,pos,"right");               
+                
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                break;
+            }
+            case 1:{
+                int[] puzzleDown = new int[9];
+                int[] puzzleLeft = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleDown,0,9);
+                arraycopy(temp,0,puzzleLeft,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                shiftPuzzle(puzzleRight,pos,"right");
+                
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleLeft);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                break;
+            }
+            case 2:{
+                int[] puzzleDown = new int[9];
+                int[] puzzleLeft = new int[9];
+                arraycopy(temp,0,puzzleDown,0,9);
+                arraycopy(temp,0,puzzleLeft,0,9);
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleLeft);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                
+                break;
+            }
+            case 3:{
+                int[] puzzleUp = new int[9];
+                int[] puzzleDown = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleUp,0,9);
+                arraycopy(temp,0,puzzleDown,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleRight,pos,"right");
+                
+                if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                
+                break;
+            }
+            case 4:{
+                 int[] puzzleUp = new int[9];
+                int[] puzzleDown = new int[9];
+                int[] puzzleLeft = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleUp,0,9);
+                arraycopy(temp,0,puzzleDown,0,9);
+                arraycopy(temp,0,puzzleLeft,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                shiftPuzzle(puzzleRight,pos,"right");
+                
+                if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleRight);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                
+                break;
+            }
+            case 5:{
+                int[] puzzleUp = new int[9];
+                int[] puzzleDown = new int[9];
+                int[] puzzleLeft = new int[9];
+                arraycopy(temp,0,puzzleUp,0,temp.length);
+                arraycopy(temp,0,puzzleDown,0,temp.length);
+                arraycopy(temp,0,puzzleLeft,0,temp.length);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleDown,pos,"down");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                
+                if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                if(!isExplored(puzzleDown) && !isFrontier(puzzleDown)){
+                    n.down = new Node(puzzleDown);
+                    n.down.parent = n;
+                    if(goalTest(n.down)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.down);
+                    }
+                    frontier.addFirst(n.down);
+                }
+                if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleLeft);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                
+                break;
+            }
+            case 6:{
+                int[] puzzleUp = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleUp,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleRight,pos,"right");
+                
+                if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                break;
+            }
+            case 7:{
+                int[] puzzleUp = new int[9];
+                int[] puzzleLeft = new int[9];
+                int[] puzzleRight = new int[9];
+                arraycopy(temp,0,puzzleUp,0,9);
+                arraycopy(temp,0,puzzleLeft,0,9);
+                arraycopy(temp,0,puzzleRight,0,9);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                shiftPuzzle(puzzleRight,pos,"right");
+                
+                 if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                 if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleLeft);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                if(!isExplored(puzzleRight) && !isFrontier(puzzleRight)){
+                    n.right = new Node(puzzleRight);
+                    n.right.parent = n;
+                    if(goalTest(n.right)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.right);
+                    }
+                    frontier.addFirst(n.right);
+                }
+                break;
+            }
+            default:{
+                int[] puzzleUp = new int[9];
+                int[] puzzleLeft = new int[9];
+                arraycopy(temp,0,puzzleUp,0,9);
+                arraycopy(temp,0,puzzleLeft,0,9);
+                shiftPuzzle(puzzleUp,pos,"up");
+                shiftPuzzle(puzzleLeft,pos,"left");
+                
+                
+                if(!isExplored(puzzleUp) && !isFrontier(puzzleUp)){
+                    n.up = new Node(puzzleUp);
+                    n.up.parent = n;
+                    if(goalTest(n.up)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.up);
+                    }
+                    frontier.addFirst(n.up);
+                }
+                if(!isExplored(puzzleLeft) && !isFrontier(puzzleLeft)){
+                    n.left = new Node(puzzleLeft);
+                    n.left.parent = n;
+                    if(goalTest(n.left)){
+                        System.out.println("GOAL FOUND");
+                        findPath(n.left);
+                    }
+                    frontier.addFirst(n.left);
+                }
+                break;
+            }
+        }
+    }
+    
+    public boolean isExplored(int[] arr){
+        String s = Arrays.toString(arr);
+        for(int i = 0; i < explored.size(); i++){
+            Node tempNode = explored.get(i);
+            String exp = Arrays.toString(tempNode.puzzle);
+            if(Arrays.toString(arr).equals(exp)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isFrontier(int[] arr){
+        for(int i = 0; i < frontier.size(); i++){
+            Node tempNode = frontier.get(i);
+            String front = Arrays.toString(tempNode.puzzle);
+            if(Arrays.toString(arr).equals(front)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int findPosition(int[] arr){
+        for(int i = 0; i < arr.length; i++){
+            if(arr[i] == 0){
+                return i;
+            }     
+        }
+        return -1;
+    }
+    
+    
+    public void shiftPuzzle(int[] arr, int position, String direction){
+        if(direction.equals("up")){
+            arr[position] = arr[position - 3];
+            arr[position - 3] = 0;
+        }
+        else if(direction.equals("down")){
+            arr[position] = arr[position + 3];
+            arr[position + 3] = 0;
+        }
+        else if(direction.equals("left")){
+            arr[position] = arr[position - 1];
+            arr[position - 1] = 0;        
+        }
+        else{
+            arr[position] = arr[position + 1];
+            arr[position + 1] = 0;
+        }
+        
+    }
+
+    public boolean goalTest(Node n){
+        int[] temp = new int[9];
+        arraycopy(n.puzzle,0,temp,0,9);
+        int[] goal = {0,1,2,3,4,5,6,7,8};
+        for(int i = 0; i < 9; i++){
+            if(temp[i] != goal[i])
+                return false;
+        }
+        //findPath(n);
+        return true;
+    }
+    
+    public void findPath(Node n){
+        int steps = 0;
+        while(n.parent != null){
+            int[] current = new int[9];
+            int[] previous = new int[9];
+            arraycopy(n.puzzle,0,current,0,9);
+            arraycopy(n.parent.puzzle,0,previous,0,9);
+            int posCurrent = findPosition(current);
+            int posPrevious = findPosition(previous);
+            FinalPath temp = new FinalPath(current,"SLIDE TILE " + current[posPrevious]);
+            path.push(temp);
+            steps++;
+            n = n.parent;
+            
+        }
+        System.out.println("To solve the puzzle please follow the " + steps + " steps:");
+        displayPath();
+        System.exit(0);
+    }
+    
+    public void displayPath(){
+        while(path.peekFirst() != null){
+            FinalPath f = path.pop();
+            int[] temp = new int[9];
+            arraycopy(f.state,0,temp,0,9);
+            System.out.println(f.direction);
+            AIProject1.displayPuzzle(temp);
+            System.out.println();
+        }
+        getResults();
+    }
+    
+    public void getResults(){
+        int frontierSaves = 0;
+        int exploredSaves = 0;
+        for(int i = 0; i < frontier.size(); i++){
+            frontierSaves++;
+        }
+        for(int i = 0; i < explored.size(); i++){
+            exploredSaves++;
+        }
+        
+        System.out.println("Nodes left in frontier: " + frontierSaves);
+        System.out.println("Nodes left in explored: " + exploredSaves);
+    }
+}
